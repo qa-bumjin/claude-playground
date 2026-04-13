@@ -94,7 +94,7 @@ TC CSV 생성 후 **반드시 Excel 마스터 파일에 자동 반영**한다.
 | 2 | 기능 | 기능 |
 | 3 | Rule | Rule |
 | 5 | 사전 조건 | 사전 조건 |
-| 6 | 테스트 단계 | 테스트 단계 (` / ` → `\n` 변환) |
+| 6 | 테스트 단계 | 테스트 단계 (` / 2.` → `\n2.` 형식으로 스텝 번호 앞에서만 줄바꿈) |
 | 8 | 기대 결과 | 기대 결과 |
 | 11 | 관련 기획서 페이지 | 관련 기획서 페이지 |
 | — | (빈칸) | 결과 |
@@ -140,7 +140,7 @@ TC CSV 생성 후 **반드시 Excel 마스터 파일에 자동 반영**한다.
 **기획서가 달라져도 이 구조와 스타일을 그대로 유지해야 한다.**
 
 ```python
-import csv, openpyxl
+import csv, re, openpyxl
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.formatting.rule import CellIsRule
 
@@ -205,7 +205,7 @@ for csv_file in CSV_FILES:
             if not row or not row[0].strip(): continue
             for csv_idx, col_num in CSV_TO_COL.items():
                 val = row[csv_idx] if csv_idx < len(row) else ""
-                if csv_idx == 6: val = val.replace(" / ", "\n")  # 테스트 단계 줄바꿈
+                if csv_idx == 6: val = re.sub(r' / (\d+\.)', r'\n\1', val)  # 스텝 번호 앞에서만 줄바꿈 (내용 내 / 는 유지)
                 c = ws.cell(row=data_row, column=col_num, value=val)
                 c.font = FONT_DATA; c.border = BORDER
                 c.alignment = ALIGN_C if col_num in (1, 7) else ALIGN_L
@@ -420,7 +420,7 @@ TC는 **기능이 아니라 rule을 기준으로 생성**한다.
 | Rule | 적용 rule |
 | 테스트 목적 | 무엇을 검증하는가 |
 | 사전 조건 | 테스트 실행 전 상태 |
-| 테스트 단계 | 순서별 실행 단계 — 마지막 검증 step은 **`확인한다` 대신 `확인`으로 종결** (예: `2. 버튼 상태를 확인`) / 단일 step인 경우 `1.` 번호 없이 작성 (예: `버튼 상태를 확인`) |
+| 테스트 단계 | 순서별 실행 단계 — **2단계 이상이면 반드시 `1. 액션 / 2. 확인` 형식으로 번호 기재** / 단일 step인 경우 번호 없이 작성 (예: `버튼 상태를 확인`) / 마지막 검증 step은 **`확인한다` 대신 `확인`으로 종결** |
 | 입력값 | 사용할 데이터 |
 | 기대 결과 | 예상되는 시스템 반응 — **명사형 종결(`~됨`, `~없음`, `~않음`)로 작성** / **TC 1개당 기대 결과는 1개** (복수 결과는 TC를 분리) |
 | 우선순위 | High / Medium / Low |
@@ -455,7 +455,7 @@ TC ID, ASSUMED, 기능, Rule, 테스트 목적, 사전 조건, 테스트 단계,
 - `ASSUMED`: 가정 기반 TC이면 `Y`, 아니면 `N`
 - `결과` / `담당자` / `Comment`: 에이전트가 비워두고 QA 엔지니어가 채움
   - `결과` 허용 값: `Pass` / `Fail` / `N/A` (Excel에서 조건부 색상 자동 적용)
-- `관련 기획서 페이지`: TC 작성 근거가 된 페이지 번호 (여러 개면 쉼표 구분)
+- `관련 기획서 페이지`: TC 작성 근거가 된 페이지 번호 (여러 개면 쉼표 구분) — **섹션 타이틀 페이지(제목만 있고 스펙 내용이 없는 페이지)는 기재하지 않는다. 실제 스펙 내용이 있는 페이지 번호만 기재한다.**
 
 > ⛔ **열은 반드시 15개 고정이다.** 값이 없는 열(`입력값`, `결과`, `담당자`, `Comment`)도 빈 쉼표로 자리를 채운다.
 > 올바른 예: `TC-001,N,기능명,Rule,목적,사전조건,테스트단계,,기대결과,High,Positive,34,,,`
