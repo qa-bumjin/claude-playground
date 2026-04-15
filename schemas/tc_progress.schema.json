@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TC Progress Summary",
+  "type": "object",
+  "required": ["session_summary"],
+  "properties": {
+    "session_summary": {
+      "type": "object",
+      "required": ["total_features", "completed_features", "in_progress_features", "pending_features", "total_tc_generated"],
+      "properties": {
+        "total_features": { "type": "integer" },
+        "completed_features": { "type": "integer" },
+        "in_progress_features": { "type": "integer" },
+        "pending_features": { "type": "integer" },
+        "total_tc_generated": { "type": "integer" }
+      },
+      "additionalProperties": true
+    },
+    "generated_files": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "last_updated_feature": {
+      "type": ["string", "null"]
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

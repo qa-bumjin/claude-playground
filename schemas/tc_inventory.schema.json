@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TC Inventory",
+  "type": "object",
+  "required": ["document", "features"],
+  "properties": {
+    "document": {
+      "type": "string"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["feature_id", "feature_name", "rules", "status", "tc_status"],
+        "properties": {
+          "feature_id": { "type": "string" },
+          "feature_name": { "type": "string" },
+          "description": { "type": "string" },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["rule_id", "rule_description"],
+              "properties": {
+                "rule_id": { "type": "string" },
+                "rule_description": { "type": "string" },
+                "assumed": { "type": "boolean" },
+                "boundary_conditions": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "related_pages": {
+            "type": "array",
+            "items": { "type": "integer" }
+          },
+          "status": {
+            "type": "string"
+          },
+          "tc_status": {
+            "type": "string",
+            "enum": ["pending", "generated", "in_progress", "needs_review", "not_applicable"]
+          },
+          "tc_file": { "type": "string" },
+          "tc_count": { "type": "integer" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

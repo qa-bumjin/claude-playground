@@ -1,1 +1,15 @@
 autoresearch-tc/
+
+# 기획서 원본 (바이너리, 용량 큼)
+input/*.pdf
+
+# 생성 산출물 (재생성 가능)
+output/
+
+# 환경변수 실제 값
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
